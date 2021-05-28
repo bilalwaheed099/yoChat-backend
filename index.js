@@ -9,6 +9,7 @@ const passport = require('passport');
 const profile = require('./routes/profile');
 const users = require('./routes/users');
 const friends = require('./routes/friends');
+const chats = require('./routes/chats');
 
 
 const app = express();
@@ -34,6 +35,7 @@ require('./config/passport')(passport);
 app.use('/api/users', users)
 app.use('/api/profile', profile)
 app.use('/api/friends', friends)
+app.use('/api/chats', chats)
 
 
 const db = require('./config/keys').mongoURI;

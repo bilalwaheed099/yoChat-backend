@@ -27,7 +27,7 @@ router.post('/add', passport.authenticate('jwt', {session: false}), (req, res) =
     console.log(user);
     const friendHandle = req.body.handle;
     console.log(friendHandle)
-    const friends = [];
+    // const friends = [];
     User.findOneAndUpdate({_id: req.user.id}, {$addToSet: {friends: friendHandle}}, {upsert: true})
         .then(user => {
             res.json(user);
