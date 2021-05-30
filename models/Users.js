@@ -24,34 +24,7 @@ const UserSchema = new Schema({
     },
     friends: {
         type: [String]
-    },
-    chats: [
-        {
-            userHandle: {
-                type: String,
-                required: true
-            },
-            msgs: [
-                {
-                    to: {
-                        type: String,
-                        required: true,
-                    },
-                    from: {
-                        type: String,
-                        required: true
-                    },
-                    msg: {
-                        type: String,
-                    },
-                    timestamp: {
-                        type: String
-                    }
-                }
-            ]
-        }
-    ]
-
+    }
 });
 
 module.exports = User = mongoose.model('users', UserSchema);

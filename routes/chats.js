@@ -55,8 +55,11 @@ router.post("/send", (req, res) => {
         });
 });
 
+//@GET /api/chats/test
+//@DESC for test
 
-//@GET /api.chats/test
+
+//@GET /api/chats/test
 //@DESC for test
 router.get("/test", (req, res) => {
     res.json({msg: "Chat works"});

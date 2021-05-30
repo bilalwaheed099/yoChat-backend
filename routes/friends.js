@@ -21,17 +21,26 @@ router.get('/test', (req, res) => {
     res.json({msg: "Friends works!"})
 });
 
-router.post('/add', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.post('/add', (req, res) => { 
     console.log(req.body);
-    const user = req.user.id;
-    console.log(user);
-    const friendHandle = req.body.handle;
+    const username = req.body.username; // current user's handle
+    console.log(username);
+    const friendHandle = req.body.friendHandle; // handle of friend to be added
     console.log(friendHandle)
     // const friends = [];
-    User.findOneAndUpdate({_id: req.user.id}, {$addToSet: {friends: friendHandle}}, {upsert: true})
+    User.findOneAndUpdate({username}, {$addToSet: {friends: friendHandle}}, {upsert: true})
         .then(user => {
             res.json(user);
         });
+});
+
+// @GET /api/friends/allusers
+// @DESC for getting all users for search features
+router.get('/allusers', (req, res) => {
+    User.find({})
+        .then(users => {
+            res.json(users)
+        })
 })
 
 module.exports = router;

@@ -89,5 +89,27 @@ router.post('/login', (req, res) =>{
         });
 });
 
+// @GET route /api/users/userdata
+// @DESC get the user data from his username
+router.get('/userdata', (req, res) => {
+    const username = req.body.username;
+    User.findOne({username})
+        .then(user => {
+            if(!user){
+             return res.json({username: "Username not found!"});
+            }
+
+            //username exists
+            const response_data = {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                username: user.username,
+                friends: user.friends,
+                email: user.email,
+            }
+            res.json(response_data);
+        })
+});
+
 
 module.exports = router;
