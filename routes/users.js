@@ -91,7 +91,7 @@ router.post('/login', (req, res) =>{
 
 // @GET route /api/users/userdata
 // @DESC get the user data from his username
-router.get('/userdata', (req, res) => {
+router.post('/userdata', (req, res) => {
     const username = req.body.username;
     User.findOne({username})
         .then(user => {
