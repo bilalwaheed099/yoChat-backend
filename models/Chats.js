@@ -25,6 +25,12 @@ const ChatSchema = new Schema({
             },
             timestamp: {
                 type: String
+            },
+            // seen: {
+            //     type: Boolean
+            // },
+            saved: {
+                type: Boolean
             }
         }
     ]
