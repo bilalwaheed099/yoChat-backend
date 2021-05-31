@@ -14,16 +14,26 @@ router.post("/", (req, res) => {
     Users.findOne({user: req.body.curUser})
         .then(user => {
             const chat = user.chats.find(chat => chat.userHandle === handle);
+            console.log(chat);
             res.json(chat);
         }).catch(e => {
             res.json(e);
         })
 });
 
+router.post("/getChat",(req,res)=>{
+    const {handle,curUser} = req.body;
+    Chats.findOne({$or: [{$and: [{userHandle1: req.body.handle}, {userHandle2: req.body.curUser}]}, {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]})
+    .then(chatResponse=>{
+        console.log(chatResponse);
+        res.json(chatResponse)
+    })
+})
+
+
 //@GET /api/chats/send
 //@DESC sends the chat
 router.post("/send", (req, res) => {
-    console.log(req.body)
     //send a msg
     const handle = req.body.handle; // handle of the friend whose chat is opened
     const msgBody = {
@@ -34,20 +44,27 @@ router.post("/send", (req, res) => {
     }
     //updating the chat collection
     Chats.findOne({$or: [{$and: [{userHandle1: req.body.handle}, {userHandle2: req.body.curUser}]}, {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]})
-        .then(chat => {
-            res.json(chat)
+        .then(async(chat) => {
             if(chat == null){
                 const newChat = new Chat({
                     userHandle1: req.body.handle,
                     userHandle2: req.body.curUser,
                     msgs: [{...msgBody}]
                 });
-                newChat.save();
+                const resChat = await newChat.save();
+                console.log(resChat);
+                res.json(resChat);
             }else{
                 Chats.findOneAndUpdate({$or: [{$and: [{userHandle1: req.body.handle}, {userHandle2: req.body.curUser}]}, {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]}, {$push: {msgs: msgBody}}, {upsert: true})
                     .then(chat => {
-                        console.log('msg sent');
+                        console.log('msg sent',chat);
+                        Chats.findOne({$or: [{$and: [{userHandle1: req.body.handle}, {userHandle2: req.body.curUser}]}, {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]})
+                        .then(chatResponse=>{
+                            console.log(chatResponse);
+                            res.json(chatResponse)
+                        })
                     })
+                    
             }
         })
         .catch(e => {
