@@ -27,7 +27,7 @@ router.post("/getChat",(req,res)=>{
     .then(chatResponse=>{
         console.log(chatResponse);
         if(chatResponse === null){
-            res.json({found:false})
+            res.json({found:false,username:curUser});
         }
         res.json(chatResponse)
     })
