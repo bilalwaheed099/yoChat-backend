@@ -8,7 +8,7 @@ const router = express.Router();
 
 //@GET /api/chats/
 //@DESC sends the chat with a particular person
-router.get("/", (req, res) => {
+router.post("/", (req, res) => {
     //give the complete chat for the current user
     const handle = req.body.handle; // handle of the friend whose chat is opened
     Users.findOne({user: req.body.curUser})
