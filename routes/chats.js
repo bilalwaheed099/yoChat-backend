@@ -27,9 +27,9 @@ router.post("/getChat",(req,res)=>{
     .then(chatResponse=>{
         console.log(chatResponse);
         if(chatResponse === null){
-            res.json({
-                userHandle1:curUser,
-                userHandle2:handle,
+            return res.json({
+                userHandle1:handle,
+                userHandle2:curUser,
                 msgs:[]
             });
         }
