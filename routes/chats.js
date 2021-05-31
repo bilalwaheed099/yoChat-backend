@@ -26,6 +26,9 @@ router.post("/getChat",(req,res)=>{
     Chats.findOne({$or: [{$and: [{userHandle1: req.body.handle}, {userHandle2: req.body.curUser}]}, {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]})
     .then(chatResponse=>{
         console.log(chatResponse);
+        if(chatResponse === null){
+            res.json({found:false})
+        }
         res.json(chatResponse)
     })
 })
