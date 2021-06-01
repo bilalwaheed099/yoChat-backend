@@ -11,7 +11,6 @@ router.post("/", (req, res) => {
     Users.findOne({user: req.body.curUser})
         .then(user => {
             const chat = user.chats.find(chat => chat.userHandle === handle);
-            console.log(chat);
             res.json(chat);
         }).catch(e => {
             res.json(e);
@@ -21,7 +20,6 @@ router.post("/getChat",(req,res)=>{
     const {handle,curUser} = req.body;
     Chats.findOne({$or: [{$and: [{userHandle1: req.body.handle}, {userHandle2: req.body.curUser}]}, {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]})
     .then(chatResponse=>{
-        console.log(chatResponse);
         if(chatResponse === null){
             return res.json({
                 userHandle1:handle,
@@ -36,12 +34,16 @@ router.post("/getChat",(req,res)=>{
 //@DESC sends the chat
 router.post("/send", (req, res) => {
     //send a msg
+    console.log("message sent by",req.body.curUser);
+    console.log("message recieve by",req.body.handle);
     const handle = req.body.handle; // handle of the friend whose chat is opened
     const msgBody = {
         msgText: req.body.msgText,
         from: req.body.from,
         to: req.body.to,
         timestamp: req.body.timestamp,
+        seenByFrom: req.body.seenByFrom,
+        seenByTo:req.body.seenByTo,
         // seen: false,
         saved: false
     }
@@ -56,7 +58,6 @@ router.post("/send", (req, res) => {
                     msgs: [{...msgBody}]
                 });
                 const resChat = await newChat.save();
-                console.log(resChat);
                 res.json(resChat);
             }else{
                 Chats.findOneAndUpdate({$or: [{$and: [{userHandle1: req.body.handle}, {userHandle2: req.body.curUser}]},
@@ -64,11 +65,9 @@ router.post("/send", (req, res) => {
                                             {$push: {msgs: msgBody}},
                                             {upsert: true})
                     .then(chat => {
-                        console.log('msg sent',chat);
                         Chats.findOne({$or: [{$and: [{userHandle1: req.body.handle}, {userHandle2: req.body.curUser}]},
                                              {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]})
                         .then(chatResponse=>{
-                            console.log(chatResponse);
                             res.json(chatResponse)
                         })
                     })
@@ -91,12 +90,45 @@ router.post('/deleteMsg', (req, res) => {
                             {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]},
                             {$pull: {msgs: {saved: false}}}, {multi: true})
         .then(chat => {
+
             res.json({success: true});
         })
         .catch(e => {
             res.json(e);
         })
         
+});
+
+
+//@POST /api/chats/seenMsg
+router.post('/seenMsg', (req, res) => {
+    //req.body has msgID, handle, curUser
+    const seenMsgIDs = req.body.msgIDs; //an ARRAY
+    console.log(seenMsgIDs);
+    Chats.findOne({$or: [{$and: [{userHandle1: req.body.handle}, {userHandle2: req.body.curUser}]},
+                            {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]})
+        .then(chat => {
+            //finding the index and the msg from the list of all msgs
+            const msgList = chat.msgs;
+            const newMsgList = msgList.forEach((msg, index) => {
+                if(seenMsgIDs.includes(`${msg._id}`)){
+                    console.log(msg);
+                    msg.seenByTo = true;
+                }
+            });
+
+            //updating the messages in the database
+            Chats.findOneAndUpdate({$or: [{$and: [{userHandle1: req.body.handle}, {userHandle2: req.body.curUser}]},
+                {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]},
+                {$set: {msgs: msgList}})
+                .then(chatRes => {
+                    return res.json({success: true}); 
+                });
+            
+        })
+        .catch(e => {
+            res.json(e);
+        });
 });
 
 //@POST /api/chats/saveMsg
@@ -111,7 +143,7 @@ router.post('/saveMsg', (req, res) => {
             //finding the index and the msg from the list of all msgs
             const msgList = chat.msgs;
             const newMsgList = msgList.forEach((msg, index) => {
-                if(saveMsgIDs.includes(msg._id)){
+                if(saveMsgIDs.includes(`${msg._id}`)){
                     msg.saved = true;
                 }
             });
