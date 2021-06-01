@@ -91,8 +91,7 @@ router.post('/deleteMsg', (req, res) => {
                             {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]},
                             {$pull: {msgs: {saved: false}}}, {multi: true})
         .then(chat => {
-            console.log('deleted');
-            res.json(chat);
+            res.json({success: true});
         })
         .catch(e => {
             res.json(e);
@@ -122,7 +121,7 @@ router.post('/saveMsg', (req, res) => {
                 {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]},
                 {$set: {msgs: msgList}})
                 .then(chatRes => {
-                    return res.json({saved: "message saved successfully"})
+                    return res.json({success: true}); 
                 });
             
         })

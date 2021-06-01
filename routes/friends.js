@@ -12,7 +12,6 @@ router.get('/list', (req, res) => {
     // 1. get the user id from req
     // 2. get his friends list 
     // 3. send the list
-    
 });
 
 // @GET /api/friends/test
