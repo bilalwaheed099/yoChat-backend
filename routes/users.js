@@ -23,7 +23,7 @@ router.post('/register', (req, res) => {
     User.findOne({username:req.body.username})
         .then(user => {
             if(user){
-                return res.json({user: "User Already Exists!",success:false})
+                return res.json({user: "User Already Exists!", success:false})
             }
             else{
                 const newUser = new User({
@@ -42,6 +42,7 @@ router.post('/register', (req, res) => {
                         newUser.save()
                             .then(user => {
                                 res.json(user);
+                                // res.json({message: "User registered", success: true})
                             })
                             .catch(err =>{
                                 console.log(err);
@@ -83,7 +84,7 @@ router.post('/login', (req, res) =>{
                         });
                     }
                     else {
-                        return res.json({username: "Password does not match",success:false});
+                        return res.json({username: "Password does not match", success:false});
                     }
                 });
         });

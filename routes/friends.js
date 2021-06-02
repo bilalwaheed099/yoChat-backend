@@ -30,6 +30,7 @@ router.post('/add', (req, res) => {
     User.findOneAndUpdate({username}, {$addToSet: {friends: friendHandle}}, {upsert: true})
         .then(user => {
             res.json(user);
+            // res.json({msg: "Friend added", success: true})
         });
 });
 

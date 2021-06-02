@@ -90,7 +90,7 @@ router.post('/deleteMsg', (req, res) => {
                             {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]},
                             {$pull: {msgs: {saved: false}}}, {multi: true})
         .then(chat => {
-
+            
             res.json({success: true});
         })
         .catch(e => {
@@ -147,7 +147,6 @@ router.post('/saveMsg', (req, res) => {
                     msg.saved = true;
                 }
             });
-
             //updating the messages in the database
             Chats.findOneAndUpdate({$or: [{$and: [{userHandle1: req.body.handle}, {userHandle2: req.body.curUser}]},
                 {$and: [{userHandle1: req.body.curUser}, {userHandle2: req.body.handle}]}]},
